@@ -10,12 +10,12 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Gui)
 find_package(Qt${QT_VERSION_MAJOR} OPTIONAL_COMPONENTS AndroidExtras Widgets)
 
 set(SOURCES
-    QtAbstractNotifier.h
-    QtNotification.cpp QtNotification.h
-    QtNotifierFactory.cpp QtNotifierFactory.h
+    QAbstractNotifier.h
+    QNotification.cpp
+    QNotifierFactory.cpp QNotifierFactory.h
 )
 set(PUBLIC_HEADER
-    QtNotification.h
+    include/QNotification.h
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
@@ -25,8 +25,8 @@ else()
 endif()
 
 target_link_libraries(qnotification PUBLIC
-    Qt::Core
-    Qt::Gui
+    Qt${QT_VERSION_MAJOR}::Core
+    Qt${QT_VERSION_MAJOR}::Gui
 )
 
 target_compile_definitions(qnotification PRIVATE QT${QT_VERSION_MAJOR}=1)
@@ -39,17 +39,17 @@ set_target_properties(qnotification PROPERTIES
 
 if(ANDROID)
     target_sources(qnotification PUBLIC
-        QtAndroidNotifier.cpp QtAndroidNotifier.h
+        QAndroidNotifier.cpp QAndroidNotifier.h
     )
 
     if(${QT_VERSION_MAJOR} EQUAL 5)
         target_link_libraries(qnotification PUBLIC
-            Qt::AndroidExtras
+            Qt5::AndroidExtras
         )
     endif()
 elseif(IOS)
     target_sources(qnotification PUBLIC
-        QtIOSNotifier.h QtIOSNotifier.mm
+        QIOSNotifier.h QIOSNotifier.mm
     )
 
     target_link_libraries(qnotification PUBLIC
@@ -66,11 +66,11 @@ elseif(EMSCRIPTEN)
     target_link_options(qnotification PRIVATE "--bind --pre-js wasm/notification.js")
 else()
     target_sources(qnotification PUBLIC
-        QtDesktopNotifier.cpp QtDesktopNotifier.h
+        QDesktopNotifier.cpp QDesktopNotifier.h
     )
 
     target_link_libraries(qnotification PUBLIC
-        Qt::Widgets
+        Qt${QT_VERSION_MAJOR}::Widgets
     )
 endif()
 
@@ -86,4 +86,4 @@ else()
     endif()
 endif()
 
-target_link_libraries(main PUBLIC qnotification Qt::Widgets)
+target_link_libraries(main PUBLIC qnotification Qt${QT_VERSION_MAJOR}::Widgets)
