@@ -62,8 +62,6 @@ elseif(EMSCRIPTEN)
         wasm/notification.h
         wasm/notification.cpp
     )
-
-    target_link_options(qnotification PRIVATE "--bind --pre-js wasm/notification.js")
 else()
     target_sources(qnotification PUBLIC
         QDesktopNotifier.cpp QDesktopNotifier.h
