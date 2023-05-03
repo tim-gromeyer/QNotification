@@ -1,12 +1,12 @@
 #ifndef QTANDROIDNOTIFIER_H
 #define QTANDROIDNOTIFIER_H
 
-#include "QtAbstractNotifier.h"
+#include "QAbstractNotifier.h"
 
-class QtAndroidNotifier : public QtAbstractNotifier
+class QAndroidNotifier : public QAbstractNotifier
 {
 public:
-    QtAndroidNotifier() {}
+    QAndroidNotifier() = default;
 
 public:
     bool show(const QVariant &notificationParameters) override;

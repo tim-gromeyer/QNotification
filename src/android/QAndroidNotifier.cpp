@@ -1,4 +1,4 @@
-#include "QtAndroidNotifier.h"
+#include "QAndroidNotifier.h"
 
 #include <QVariant>
 #if QT5
@@ -9,7 +9,7 @@
 #define JniObject QJniObject
 #endif
 
-bool QtAndroidNotifier::show(const QVariant &notificationParameters)
+bool QAndroidNotifier::show(const QVariant &notificationParameters)
 {
     QVariantMap parameters = notificationParameters.toMap();
     QString caption = parameters.value(QStringLiteral("caption"), "").toString();

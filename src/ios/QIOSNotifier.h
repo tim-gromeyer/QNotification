@@ -1,12 +1,12 @@
 #ifndef QTIOSNOTIFIER_H
 #define QTIOSNOTIFIER_H
 
-#include "QtAbstractNotifier.h"
+#include "QAbstractNotifier.h"
 
-class QtIosNotifier : public QtAbstractNotifier
+class QIosNotifier : public QAbstractNotifier
 {
 public:
-    QtIosNotifier();
+    QIosNotifier();
 
     bool show(const QVariant &notificationParameters) override;
 

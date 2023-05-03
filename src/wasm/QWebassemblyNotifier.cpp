@@ -1,4 +1,4 @@
-#include "wasm/notification.h"
+#include "wasm/QWebassemblyNotifier.h"
 
 #include <QVariant>
 
@@ -28,7 +28,7 @@ void show_notification(const char *title, const char *description, const char *i
     emscripten_run_script(script);
 }
 
-bool QtWasmNotifier::show(const QVariant &notificationParameters)
+bool QWebassemblyNotifier::show(const QVariant &notificationParameters)
 {
     QVariantMap parameters = notificationParameters.toMap();
     QString message = parameters.value(QStringLiteral("caption"), "").toString();

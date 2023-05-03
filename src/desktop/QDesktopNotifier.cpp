@@ -1,15 +1,15 @@
-#include "QtDesktopNotifier.h"
+#include "QDesktopNotifier.h"
 
 #include <QDebug>
 #include <QTimer>
 #include <QVariant>
 
-QtDesktopNotifier::QtDesktopNotifier()
+QDesktopNotifier::QDesktopNotifier()
 {
     m_SystemTrayIcon = new QSystemTrayIcon(QIcon());
 }
 
-bool QtDesktopNotifier::show(const QVariant &notificationParameters)
+bool QDesktopNotifier::show(const QVariant &notificationParameters)
 {
     qDebug() << Q_FUNC_INFO << m_SystemTrayIcon->isSystemTrayAvailable();
     QSystemTrayIcon::MessageIcon icon = QSystemTrayIcon::MessageIcon::Information;

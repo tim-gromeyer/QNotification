@@ -1,4 +1,4 @@
-#include "QtNotification.h"
+#include "QNotification.h"
 
 #include <QApplication>
 #include <QPushButton>
@@ -6,8 +6,8 @@
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
-
-    QtNotification notify;
+    
+    QNotification notify;
 
     QPushButton button("Click me!");
     QObject::connect(&button, &QPushButton::clicked, &button, [&button, &notify] {

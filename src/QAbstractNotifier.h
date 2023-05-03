@@ -12,7 +12,7 @@
  * supported or not
  */
 
-class QtAbstractNotifier : public QObject
+class QAbstractNotifier : public QObject
 {
     Q_OBJECT
 

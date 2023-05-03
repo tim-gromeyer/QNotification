@@ -9,25 +9,35 @@ find_package(QT NAMES Qt5 Qt6 REQUIRED COMPONENTS Core)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Gui)
 find_package(Qt${QT_VERSION_MAJOR} OPTIONAL_COMPONENTS AndroidExtras Widgets)
 
-set(SOURCES
-    QAbstractNotifier.h
-    QNotification.cpp
-    QNotifierFactory.cpp QNotifierFactory.h
-)
-set(PUBLIC_HEADER
+set(HEADERS
     include/QNotification.h
 )
 
+set(SOURCES
+    ${HEADERS} # Otherwise build will fail
+    src/QAbstractNotifier.h
+    src/QNotification.cpp
+    src/QNotifierFactory.cpp src/QNotifierFactory.h
+)
+
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
-    qt_add_library(qnotification MANUAL_FINALIZATION ${SOURCES} ${PUBLIC_HEADER})
+    qt_add_library(qnotification SHARED MANUAL_FINALIZATION ${SOURCES})
 else()
-    add_library(qnotification ${SOURCES} ${PUBLIC_HEADER})
+    add_library(qnotification SHARED ${SOURCES})
 endif()
 
 target_link_libraries(qnotification PUBLIC
     Qt${QT_VERSION_MAJOR}::Core
     Qt${QT_VERSION_MAJOR}::Gui
 )
+
+set_target_properties(qnotification PROPERTIES
+    VERSION ${PROJECT_VERSION}
+    SOVERSION ${PROJECT_VERSION_MAJOR}
+    PUBLIC_HEADER "${HEADERS}"
+)
+target_include_directories(qnotification PRIVATE include src)
+target_compile_features(qnotification PUBLIC cxx_std_11) # Require at least c++11
 
 target_compile_definitions(qnotification PRIVATE QT${QT_VERSION_MAJOR}=1)
 
@@ -37,9 +47,11 @@ set_target_properties(qnotification PROPERTIES
     QT_ANDROID_PACKAGE_SOURCE_DIR ${ANDROID_PACKAGE_SOURCE_DIR}
 )
 
+set(PLATFORM_SPECIFIC_SOURCES "")
+
 if(ANDROID)
-    target_sources(qnotification PUBLIC
-        QAndroidNotifier.cpp QAndroidNotifier.h
+    set(PLATFORM_SPECIFIC_SOURCES
+        src/android/QAndroidNotifier.cpp src/android/QAndroidNotifier.h
     )
 
     if(${QT_VERSION_MAJOR} EQUAL 5)
@@ -48,8 +60,8 @@ if(ANDROID)
         )
     endif()
 elseif(IOS)
-    target_sources(qnotification PUBLIC
-        QIOSNotifier.h QIOSNotifier.mm
+    set(PLATFORM_SPECIFIC_SOURCES
+        src/ios/QIOSNotifier.h ios/QIOSNotifier.mm
     )
 
     target_link_libraries(qnotification PUBLIC
@@ -58,13 +70,13 @@ elseif(IOS)
         "-framework UserNotifications"
     )
 elseif(EMSCRIPTEN)
-    target_sources(qnotification PUBLIC
-        wasm/notification.h
-        wasm/notification.cpp
+    set(PLATFORM_SPECIFIC_SOURCES
+        src/wasm/QWebassemblyNotifier.h
+        src/wasm/QWebassemblyNotifier.cpp
     )
 else()
-    target_sources(qnotification PUBLIC
-        QDesktopNotifier.cpp QDesktopNotifier.h
+    set(PLATFORM_SPECIFIC_SOURCES
+        src/desktop/QDesktopNotifier.cpp src/desktop/QDesktopNotifier.h
     )
 
     target_link_libraries(qnotification PUBLIC
@@ -72,16 +84,25 @@ else()
     )
 endif()
 
-install(TARGETS qnotification DESTINATION lib)
+target_sources(qnotification PUBLIC ${PLATFORM_SPECIFIC_SOURCES})
+
+install(TARGETS qnotification
+    EXPORT ${PROJECT_NAME}Targets
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}
+)
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
-    qt_add_executable(main main.cpp)
+    qt_add_executable(main main.cpp ${SOURCES} ${PLATFORM_SPECIFIC_SOURCES})
 else()
     if(ANDROID)
-        add_library(main SHARED main.cpp)
+        add_library(main SHARED main.cpp ${SOURCES} ${PLATFORM_SPECIFIC_SOURCES})
     else()
-        add_executable(main main.cpp)
+        add_executable(main main.cpp ${SOURCES} ${PLATFORM_SPECIFIC_SOURCES})
     endif()
 endif()
 
-target_link_libraries(main PUBLIC qnotification Qt${QT_VERSION_MAJOR}::Widgets)
+target_link_libraries(main PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+target_include_directories(main PRIVATE include src)

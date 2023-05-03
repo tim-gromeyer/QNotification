@@ -1,4 +1,4 @@
-#include "QtIOSNotifier.h"
+#include "QIOSNotifier.h"
 
 #include <QVariant>
 
@@ -8,7 +8,7 @@
 
 @interface NotificationDelegate : UIResponder <UIApplicationDelegate, UNUserNotificationCenterDelegate>
 {
-    QtIosNotifier *g_IosNotifier;
+    QIosNotifier *g_IosNotifier;
 }
 @end
 
@@ -16,7 +16,7 @@
 
 @implementation NotificationDelegate
 
-- (id) initWithObject:(QtIosNotifier *)localNotification
+- (id) initWithObject:(QIosNotifier *)localNotification
 {
     self = [super init];
     if (self) {
@@ -47,7 +47,7 @@
 
 //------------------------------------------------------------------------------
 
-QtIosNotifier::QtIosNotifier()
+QIosNotifier::QIosNotifier()
 {
     m_Delegate = [[NotificationDelegate alloc] initWithObject:this];
     UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
@@ -63,7 +63,7 @@ QtIosNotifier::QtIosNotifier()
 
 //------------------------------------------------------------------------------
 
-bool QtIosNotifier::show(const QVariant &notificationParameters)
+bool QIosNotifier::show(const QVariant &notificationParameters)
 {
     QVariantMap parameters  = notificationParameters.toMap();
     QString caption         = parameters.value("caption", "").toString();
